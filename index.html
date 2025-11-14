@@ -14,33 +14,40 @@
  
   
 
-
-  <meta name="viewport"
+<meta name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <style>
   html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
     width: 100%;
-    overflow: hidden; /* optional: prevents scrolling */
+    height: 100%;
   }
 
-  .wrapper {
-    width: 100vw;
-    height: 100vh;
+  /* full-screen area that will hold the animation */
+  .stage {
+    position: fixed;
+    inset: 0;                 /* top:0; right:0; bottom:0; left:0; */
     display: flex;
-    align-items: center;   /* vertical center */
-    justify-content: center; /* horizontal center */
-    background: #003055;      /* or any background you like */
+    justify-content: center;  /* horizontal center */
+    align-items: center;      /* vertical center */
+    overflow: hidden;         /* avoid scrollbars and cutting edges */
+    background: #003055;         /* optional, pick your color */
   }
 
-  /* This is the original animation size from GWD */
-  .animation-outer {
+  /* original animation size */
+  .stage-inner {
     width: 1000px;
     height: 1000px;
-    transform-origin: top left;
+    position: relative;
+    transform-origin: center center; /* IMPORTANT: center, not top-left */
+  }
+
+  /* make sure GWD doesn’t fight the sizing */
+  #gwd-ad {
+    width: 100%;
+    height: 100%;
   }
 </style>
   
@@ -1013,8 +1020,8 @@ body {
   
   <script gwd-served-sizes="" type="application/json">["1000x1200"]</script>
 
-  <div class="wrapper">
-    <div class="animation-outer">
+<div class="stage">
+    <div class="stage-inner">
   
   <gwd-genericad id="gwd-ad">
     <gwd-pagedeck class="gwd-page-container" id="pagedeck">
@@ -1100,21 +1107,22 @@ body {
   </script>
 
 
-  <script>
-  (function() {
-    var BASE_SIZE = 1000; // your original width/height
+<script>
+  (function () {
+    var BASE_SIZE = 1000; // original width/height
 
     function resizeAnim() {
-      var outer = document.querySelector('.animation-outer');
-      if (!outer) return;
+      var inner = document.querySelector('.stage-inner');
+      if (!inner) return;
 
       var ww = window.innerWidth;
       var wh = window.innerHeight;
 
-      // scale so it fits both width and height
-      var scale = Math.min(ww / BASE_SIZE, wh / BASE_SIZE);
+      // scale so it fits within the viewport
+      var scale = Math.min(ww, wh) / BASE_SIZE;
 
-      outer.style.transform = 'scale(' + scale + ')';
+      // center & scale from the middle
+      inner.style.transform = 'scale(' + scale + ')';
     }
 
     window.addEventListener('load', resizeAnim);
