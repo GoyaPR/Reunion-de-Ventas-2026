@@ -11,6 +11,42 @@
   <style id="gwd-lightbox-style">.gwd-lightbox {
     overflow: hidden;
 }</style>
+ 
+  
+
+
+  <meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* optional: prevents scrolling */
+  }
+
+  .wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;   /* vertical center */
+    justify-content: center; /* horizontal center */
+    background: #003055;      /* or any background you like */
+  }
+
+  /* This is the original animation size from GWD */
+  .animation-outer {
+    width: 1000px;
+    height: 1000px;
+    transform-origin: top left;
+  }
+</style>
+  
+  
+  
+  
   <style id="gwd-text-style">p {
     margin: 0px;
 }
@@ -976,6 +1012,10 @@ body {
 <body>
   
   <script gwd-served-sizes="" type="application/json">["1000x1200"]</script>
+
+  <div class="wrapper">
+    <div class="animation-outer">
+  
   <gwd-genericad id="gwd-ad">
     <gwd-pagedeck class="gwd-page-container" id="pagedeck">
       <gwd-page id="page1" class="gwd-page-wrapper gwd-page-size gwd-lightbox gwd-page-1wqj gwd-page-vcah" data-gwd-width="100%" data-gwd-height="100%" data-gwd-name="Intro">
@@ -1015,6 +1055,10 @@ body {
       </gwd-page>
     </gwd-pagedeck>
   </gwd-genericad>
+
+    </div>
+  </div>
+      
   <script type="text/javascript" id="gwd-init-code">
     (function() {
       var gwdAd = document.getElementById('gwd-ad');
@@ -1054,6 +1098,29 @@ body {
         handleAdInitialized, false);
     })();
   </script>
+
+
+  <script>
+  (function() {
+    var BASE_SIZE = 1000; // your original width/height
+
+    function resizeAnim() {
+      var outer = document.querySelector('.animation-outer');
+      if (!outer) return;
+
+      var ww = window.innerWidth;
+      var wh = window.innerHeight;
+
+      // scale so it fits both width and height
+      var scale = Math.min(ww / BASE_SIZE, wh / BASE_SIZE);
+
+      outer.style.transform = 'scale(' + scale + ')';
+    }
+
+    window.addEventListener('load', resizeAnim);
+    window.addEventListener('resize', resizeAnim);
+  })();
+</script>
 
 
 </body></html>
