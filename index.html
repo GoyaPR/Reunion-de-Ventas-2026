@@ -36,6 +36,7 @@ body {
     max-width: 1000px;
     margin: 0 auto;
     aspect-ratio: 1000 / 1200;
+    overflow: hidden;
 }
 #responsive-wrapper > gwd-genericad {
     position: absolute;
@@ -1056,6 +1057,12 @@ body {
           wrapperHeight = wrapperWidth * (DESIGN_HEIGHT / DESIGN_WIDTH);
         }
         var scale = Math.min(wrapperWidth / DESIGN_WIDTH, wrapperHeight / DESIGN_HEIGHT);
+        if (wrapperWidth <= 480) {
+          scale *= 1.25;
+        } else if (wrapperWidth <= 768) {
+          scale *= 1.12;
+        }
+        scale = Math.min(scale, 1);
         ad.style.transform = 'scale(' + scale + ')';
         var scaledWidth = DESIGN_WIDTH * scale;
         var scaledHeight = DESIGN_HEIGHT * scale;
