@@ -251,6 +251,12 @@ body {
     -webkit-animation: 3.888s linear 0s 1 normal forwards gwd-gen-hseygwdanimation_gwd-keyframes;
     -moz-animation: 3.888s linear 0s 1 normal forwards gwd-gen-hseygwdanimation_gwd-keyframes;
 }
+#page1.gwd-play-animation .gwd-gen-hseygwdanimation {
+    /* Give the envelope stage more readable time on screen. */
+    animation-duration: 6s;
+    -webkit-animation-duration: 6s;
+    -moz-animation-duration: 6s;
+}
 @keyframes gwd-gen-1hjzgwdanimation_gwd-keyframes {
     0% {
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
@@ -910,22 +916,56 @@ body {
     visibility: inherit;
     opacity: 1;
 }
-/* Corner ribbon confirmation button */
-#confirm-btn {
+/* Full-screen confetti overlay */
+#confetti-container {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    overflow: hidden;
+    pointer-events: none;
+}
+.confetti {
+    position: absolute;
+    top: -10%;
+    width: 8px;
+    height: 14px;
+    opacity: 0.9;
+    background: #ffd700;
+    border-radius: 2px;
+    transform: translate3d(0, 0, 0);
+    animation: confetti-fall var(--duration, 8s) linear infinite;
+}
+@keyframes confetti-fall {
+    0% {
+        transform: translate3d(0, -10%, 0) rotateZ(0deg) rotateX(0deg);
+    }
+    50% {
+        transform: translate3d(calc(var(--x-shift, 0px) * 0.5), 55vh, 0) rotateZ(180deg) rotateX(180deg);
+    }
+    100% {
+        transform: translate3d(var(--x-shift, 0px), 110vh, 0) rotateZ(360deg) rotateX(360deg);
+    }
+}
+/* Bottom CTA buttons */
+#cta-buttons {
     position: fixed;
     bottom: 16px;
     left: 16px;
     right: 16px;
-    transform: none;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+}
+.cta-btn {
+    display: block;
     padding: 14px 22px;
-    width: auto;
+    width: 100%;
     max-width: 420px;
     margin: 0 auto;
     text-align: center;
     border: none;
-    background: linear-gradient(135deg, #ffcc00, #ffb300);
-    color: #003055;
     font-family: Arial, sans-serif;
     font-size: 16px;
     font-weight: 700;
@@ -934,8 +974,17 @@ body {
     cursor: pointer;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     border-radius: 999px;
+    transition: transform 0.08s ease;
 }
-#confirm-btn:active {
+#confirm-btn {
+    background: linear-gradient(135deg, #ffcc00, #ffb300);
+    color: #003055;
+}
+#download-btn {
+    background: linear-gradient(135deg, #4dbfff, #0080d9);
+    color: #ffffff;
+}
+.cta-btn:active {
     transform: scale(0.98);
 }
 .gwd-div-1n26 {
@@ -1019,11 +1068,12 @@ body {
 </head>
 
 <body>
-  
   <script gwd-served-sizes="" type="application/json">["1000x1200"]</script>
- 
- 
-  <a id="confirm-btn" aria-label="Confirmar asistencia" href="https://www.goyapr.com/confirmacion-de-asistencia" target="_blank" rel="noopener">Confirmar asistencia</a>
+  <div id="confetti-container" aria-hidden="true"></div>
+  <div id="cta-buttons">
+    <a id="confirm-btn" class="cta-btn" aria-label="Confirmar asistencia" href="https://www.goyapr.com/confirmacion-de-asistencia" target="_blank" rel="noopener">Confirmar asistencia</a>
+    <a id="download-btn" class="cta-btn" aria-label="Descargar invitación" href="https://goyapr.box.com/s/mlh375snktj4j2ztd3ep1pasnk3j4k1n" target="_blank" rel="noopener" download>Descargar invitación</a>
+  </div>
 
    <div id="responsive-wrapper">
   <gwd-genericad id="gwd-ad">
@@ -1146,6 +1196,67 @@ body {
         handleWebComponentsReady, false);
       window.addEventListener('adinitialized',
         handleAdInitialized, false);
+    })();
+  </script>
+  <script>
+    (function() {
+      var confettiContainer = document.getElementById('confetti-container');
+      if (!confettiContainer) {
+        return;
+      }
+
+      var COLORS = ['#ffd700', '#ffb400', '#f7d96f', '#ffef9f', '#ffcd38'];
+      var CONFETTI_COUNT = 180;
+
+      function randomBetween(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function addConfetti() {
+        for (var i = 0; i < CONFETTI_COUNT; i++) {
+          var piece = document.createElement('span');
+          piece.className = 'confetti';
+
+          var width = randomBetween(6, 10);
+          var height = randomBetween(12, 18);
+          piece.style.width = width + 'px';
+          piece.style.height = height + 'px';
+          piece.style.left = randomBetween(0, 100) + '%';
+          piece.style.setProperty('--x-shift', Math.round(randomBetween(-180, 180)) + 'px');
+          piece.style.setProperty('--duration', randomBetween(6, 9).toFixed(2) + 's');
+          var delay = randomBetween(0, 4);
+          piece.style.animationDelay = delay.toFixed(2) + 's';
+          piece.style.backgroundColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+          confettiContainer.appendChild(piece);
+        }
+      }
+
+      window.addEventListener('load', addConfetti);
+    })();
+  </script>
+  <script>
+    (function() {
+      // Slow every animation uniformly without editing each keyframe/shorthand.
+      var SPEED_MULTIPLIER = 2.0; // 50% slower (durations × 1.5)
+      var playbackRate = 1 / SPEED_MULTIPLIER;
+
+      function slowAnimations() {
+        if (!document.getAnimations) {
+          return;
+        }
+        document.getAnimations().forEach(function(animation) {
+          // Playback rate controls overall speed without touching timing curves.
+          animation.playbackRate = playbackRate;
+        });
+      }
+
+      // Apply at startup and whenever a new animation begins.
+      window.addEventListener('DOMContentLoaded', slowAnimations);
+      window.addEventListener('load', slowAnimations);
+      document.addEventListener('animationstart', function() {
+        requestAnimationFrame(slowAnimations);
+      }, true);
     })();
   </script>
 
